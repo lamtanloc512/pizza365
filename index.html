@@ -232,7 +232,7 @@
                       </ul>
                     </div>
                     <div class="card-footer text-center">
-                      <button class="btn btn-success">CHỌN</button>
+                      <button class="btn-choose btn btn-success">CHỌN</button>
                     </div>
                   </div>
                 </div>
@@ -255,7 +255,7 @@
                       </ul>
                     </div>
                     <div class="card-footer text-center">
-                      <button class="btn btn-success">CHỌN</button>
+                      <button class="btn-choose btn btn-success">CHỌN</button>
                     </div>
                   </div>
                 </div>
@@ -276,7 +276,7 @@
                       </ul>
                     </div>
                     <div class="card-footer text-center">
-                      <button class="btn btn-success">CHỌN</button>
+                      <button class="btn-choose btn btn-success">CHỌN</button>
                     </div>
                   </div>
                 </div>
@@ -290,7 +290,6 @@
               <h2><b class="p-2 border-bottom">Chọn Loại Pizza</b></h2>
             </div>
 
-            <!-- Content Who We Are -->
             <div class="col-sm-12">
               <div class="row">
                 <div class="col-sm-4">
@@ -307,7 +306,11 @@
                         Phasellus eget enim eu lectus faucibus vestibulum.
                         Suspendisse sodales pellentesque elementum.
                       </p>
-                      <p><button class="btn btn-info w-100">CHỌN</button></p>
+                      <p>
+                        <button class="btn-type-pizza btn btn-info w-100">
+                          CHỌN
+                        </button>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -326,7 +329,9 @@
                         Suspendisse sodales pellentesque elementum.
                       </p>
                       <p>
-                        <button class="btn btn-info w-100">CHỌN</button>
+                        <button class="btn-type-pizza btn btn-info w-100">
+                          CHỌN
+                        </button>
                       </p>
                     </div>
                   </div>
@@ -345,7 +350,11 @@
                         Phasellus eget enim eu lectus faucibus vestibulum.
                         Suspendisse sodales pellentesque elementum.
                       </p>
-                      <p><button class="btn btn-info w-100">CHỌN</button></p>
+                      <p>
+                        <button class="btn-type-pizza btn btn-info w-100">
+                          CHỌN
+                        </button>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -477,19 +486,16 @@
       else alert("Failed");
       */
 
-      // Khai báo biến toàn cục để lưu các loại pizza
+      // Khai báo biến toàn cục truy xuất phần tử form
       let gFormDataSubmit = document.getElementById("form-data-submit");
 
       // Khai báo biến toàn cục để lưu các loại pizza
       let gSelectedPizzaType = [];
 
-      console.log(gSelectedPizzaType);
-
-      // khai báo biến voucher
+      // khai báo biến voucher khi khách hàng nhập đúng thì giảm giá 20%;
       let gDiscountVouchers = ["A1", "B2", "C3", "D4", "E5"];
 
       // Khai báo một object lấy dữ liệu menu pizza
-
       let gMenuDataObject = {
         size: "",
         dimesion: null,
@@ -501,12 +507,13 @@
 
       /*** REGION 2 - Vùng gán / thực thi hàm xử lý sự kiện cho các elements */
 
-      // Thực thi hàm chuyển màu khi ấn nút chọn menu
+      // Thực thi hàm chuyển màu khi ấn nút chọn menu pizza
       onClickChangeColorMenu();
-      // Thực thi hàm chuyển màu khi ấn nút chọn pizza
+
+      // Thực thi hàm chuyển màu khi ấn nút chọn loại pizza
       onClickChangeColorPizza();
 
-      // Thực thi hàm submit form
+      // Thực thi hàm submit form, khi ấn submit sẽ kiểm tra các trường form và discount;
       onSubmitOrderPizza(gSelectedPizzaType, gMenuDataObject);
 
       /*** REGION 3 - Event handlers - Vùng khai báo các hàm xử lý sự kiện */
@@ -514,77 +521,90 @@
       //khai báo hàm thực thi khi ấn nút chuyển màu MENU COMBO(size pizza) + lay du lieu
       function onClickChangeColorMenu() {
         // lựa chọn tất cả phần tử có class là btn btn-success
-        let vBtnArrayElements = document.querySelectorAll(".btn.btn-success");
-        // Khai báo sự kiện khi ấn bất kỳ đâu vào doom (e)
-        document.addEventListener("click", (e) => {
-          //truy suat vao node cha cua phan tu menu
-          // duyệt mảng các phần tử nút có class là btn btn-sucess
-          vBtnArrayElements.forEach((bIn) => {
-            // lưu phần tử được ấn và sự kiện đó vào một biến
-            let vBtnClickedElement = bIn.contains(e.target);
-            // kiểm tra xem ấn vào phần tử btn hay chưa, nếu đúng == true, sai thì == false
-            // console.log(vBtnClickedElement);
-            // nếu true thì thay đổi class từ success sang warning để đổi màu, sai thì đổi màu ngược lại
-            if (vBtnClickedElement) {
-              bIn.classList.replace("btn-success", "btn-warning");
+        let vBtnArrayElements = document.querySelectorAll(
+          ".btn.btn-success.btn-choose"
+        );
+        // Duyệt mảng các phần tử nút được chọn sau đó thêm sự kiện click vào mỗi phần tử
+        // gán classname cho mỗi phần tử sau khi được click sẽ đổi sang màu vàng
+        // khi đổi sang màu vàng thì cùng lúc đó tiến hành ghi dữ liệu vào đối tượng gMenuDataObject
+        // khi ấn sang nút khác thì đổi màu xanh trở lại
+        vBtnArrayElements.forEach((vBtnElement) => {
+          vBtnElement.addEventListener("click", (bIn) => {
+            // chuyển màu cho nút
+            bIn.target.className = "btn btn-warning btn-choose";
+            vBtnArrayElements.forEach.call(
+              document.querySelectorAll(".btn-warning.btn-choose"),
+              (cIn) => {
+                if (cIn == bIn.target) {
+                  console.log(cIn);
+                  //truy suat vao node cha cua phan tu nut
+                  let vDivCardBodyMenu =
+                    cIn.parentNode.previousSibling.previousSibling;
+                  //Card header div, dung de truy xuat vao innerHtml cua childnode h3
+                  let vH3SizeMenu =
+                    vDivCardBodyMenu.previousSibling.previousSibling.querySelector(
+                      "h3"
+                    );
+                  // truy xuất phần tử ul từ button được click
+                  let vUlInfoMenu = vDivCardBodyMenu.querySelector("ul");
+                  // truy xuất mảng các phần tử li từ button được click
+                  let vLiArrayInfoMenu = vUlInfoMenu.querySelectorAll("li");
 
-              let vDivCardBodyMenu =
-                bIn.parentNode.previousSibling.previousSibling;
-              //Card header div, dung de truy xuat vao innerHtml cua childnode h3
-              let vH3SizeMenu =
-                vDivCardBodyMenu.previousSibling.previousSibling.querySelector(
-                  "h3"
-                );
-
-              let vUlInfoMenu = vDivCardBodyMenu.querySelector("ul");
-              let vLiArrayInfoMenu = vUlInfoMenu.querySelectorAll("li");
-
-              gMenuDataObject.dimesion =
-                vLiArrayInfoMenu[0].childNodes[1].data.trim();
-              gMenuDataObject.suongNuong =
-                vLiArrayInfoMenu[1].childNodes[1].data.trim();
-              gMenuDataObject.saLad =
-                vLiArrayInfoMenu[2].childNodes[1].data.trim();
-              gMenuDataObject.nuocNgot =
-                vLiArrayInfoMenu[3].childNodes[1].data.trim();
-              gMenuDataObject.gia =
-                vLiArrayInfoMenu[4].querySelector("b").innerHTML;
-              gMenuDataObject.size = vH3SizeMenu.innerHTML;
-              console.log(gMenuDataObject);
-            } else {
-              bIn.classList.replace("btn-warning", "btn-success");
-            }
+                  //gán dữ liệu, thông tin của kích cỡ pizza vào object gMenuDataObject
+                  gMenuDataObject.dimesion =
+                    vLiArrayInfoMenu[0].childNodes[1].data.trim();
+                  gMenuDataObject.suongNuong =
+                    vLiArrayInfoMenu[1].childNodes[1].data.trim();
+                  gMenuDataObject.saLad =
+                    vLiArrayInfoMenu[2].childNodes[1].data.trim();
+                  gMenuDataObject.nuocNgot =
+                    vLiArrayInfoMenu[3].childNodes[1].data.trim();
+                  gMenuDataObject.gia =
+                    vLiArrayInfoMenu[4].querySelector("b").innerHTML;
+                  gMenuDataObject.size = vH3SizeMenu.innerHTML;
+                  console.log(gMenuDataObject);
+                }
+                if (cIn !== bIn.target) {
+                  // khi ấn nút khác thì đổi màu phần tử button về như cũ
+                  cIn.className = "btn btn-success btn-choose";
+                }
+              }
+            );
           });
         });
       }
 
       // Khai báo hàm thực thi chuyển màu khi ấn nút chọn phần "CHỌN LOẠI PIZZA"
       function onClickChangeColorPizza() {
-        // lựa chọn tất cả phần tử có class là btn btn-success
-        let vBtnArrayElements = document.querySelectorAll(".btn.btn-info");
-        //console.log(vBtnArrayElements);
-        // Khai báo sự kiện khi ấn bất kỳ đâu vào doom (e)
-        document.addEventListener("click", (e) => {
-          // duyệt mảng các phần tử nút có class là btn btn-sucess
-          vBtnArrayElements.forEach((bIn) => {
-            // lưu phần tử được ấn và sự kiện đó vào một biến
-            let vBtnClickedElement = bIn.contains(e.target);
-            // kiểm tra xem ấn vào phần tử btn hay chưa, nếu đúng == true, sai thì == false
-            // console.log(vBtnClickedElement);
-            // nếu true thì thay đổi class từ success sang warning để đổi màu, sai thì đổi màu ngược lại
-            if (vBtnClickedElement) {
-              bIn.classList.replace("btn-info", "btn-warning");
-              onClickGetDataPizza(bIn);
-            } else {
-              bIn.classList.replace("btn-warning", "btn-info");
-            }
+        // lựa chọn tất cả phần tử có class là btn btn-info btn-type-pizza
+        let vBtnArrayElements = document.querySelectorAll(
+          ".btn.btn-info.btn-type-pizza.w-100"
+        );
+
+        vBtnArrayElements.forEach((vBtnElement) => {
+          vBtnElement.addEventListener("click", (bIn) => {
+            // chuyển màu cho nút
+            bIn.target.className = "btn btn-warning btn-type-pizza w-100";
+            vBtnArrayElements.forEach.call(
+              document.querySelectorAll(
+                ".btn.btn-warning.btn-type-pizza.w-100"
+              ),
+              (cIn) => {
+                if (cIn == bIn.target) {
+                  onClickGetDataPizza(cIn);
+                }
+                if (cIn !== bIn.target) {
+                  // khi ấn nút khác thì đổi màu phần tử button về như cũ
+                  cIn.className = "btn btn-info btn-type-pizza w-100";
+                }
+              }
+            );
           });
         });
       }
 
-      // khai baos function in ra console khi chọn loại pizza
+      // khai bao function in ra console khi chọn loại pizza
       // trả về một mảng chứa object dữ liệu loại pizza
-
       function onClickGetDataPizza(paramPizza) {
         // khai báo đối tượng pizza
         let vDataPizza = {
@@ -767,7 +787,6 @@
         ) {
           // Check paramShow tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
           // nếu khách hàng chưa chọn món thì catch error và alert để khách biết
-
           try {
             if (paramPizza !== null) {
               let vDivInfoOrder = document.getElementById("div-info-order");
@@ -790,7 +809,7 @@
               <hr />
               <div class="div-pizza-type">
                 <p>Loại pizza: ${paramPizza.name}</p>
-                <p>Mã voucher:</p>
+                <p>Mã voucher: ${paramForm.coupon}</p>
                 <p>Giá VND: ${paramPizza.price}</p>
                 <p>Discount: ${paramDiscount}% </p>
                 <strong>Số tiền phải trả: ${
@@ -818,6 +837,20 @@
                   vInputAddressOrder.value = "";
                   vInputMsgOrder.value = "";
                   vInputCouponOrder.value = "";
+                  // reset lại màu các nút chọn menu
+                  let vBtnArrayMenuElements = document.querySelectorAll(
+                    ".btn.btn-warning.btn-choose"
+                  );
+                  vBtnArrayMenuElements.forEach((vBtnElement) => {
+                    vBtnElement.className = "btn btn-success btn-choose";
+                  });
+                  // reset lại màu các nút chọn menu
+                  let vBtnArrayTypeElements = document.querySelectorAll(
+                    ".btn.btn-warning.btn-type-pizza.w-100"
+                  );
+                  vBtnArrayTypeElements.forEach((vBtnElement) => {
+                    vBtnElement.className = "btn btn-info btn-type-pizza w-100";
+                  });
                 });
               }
 
