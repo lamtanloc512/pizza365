@@ -385,6 +385,7 @@
                     </div>
                     <div class="form-group">
                       <label for="inputPhone">Điện thoại</label>
+                      <!-- Sử dụng Regex để khống chế trường nhập -->
                       <input
                         type="number"
                         class="form-control"
@@ -417,8 +418,8 @@
                         type="text"
                         class="form-control"
                         id="inputCoupon"
-                        placeholder="Nhập mã giảm giá"
-                        pattern="[a-zA-Z]+"
+                        placeholder="Nhập mã giảm giá, các mã hợp lệ là A1, B2, C3, D4, E5"
+                        pattern="[A-Z]{1,9}\d$"
                       />
                     </div>
                     <button type="submit" class="btn btn-dark w-100">
@@ -469,6 +470,12 @@
     <script>
       "use strict";
       /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
+
+      // Test biểu thức chính quy
+      /*       var str = "ALPHA";
+      if (/^[A-Z]*$/.test(str)) alert("Passed");
+      else alert("Failed");
+      */
 
       // Khai báo biến toàn cục để lưu các loại pizza
       let gFormDataSubmit = document.getElementById("form-data-submit");
@@ -606,18 +613,17 @@
 
       // khai báo hàm xử lý gửi đơn hàng
       function onSubmitOrderPizza(paramOrder, paramMenu) {
+        // khai báo các biến local, chứa giá trị của form input
+        let vInputNameOrder = document.getElementById("inputName");
+        let vInputEmailOrder = document.getElementById("inputEmail");
+        let vInputPhoneOrder = document.getElementById("inputPhone");
+        let vInputAddressOrder = document.getElementById("inputAddress");
+        let vInputMsgOrder = document.getElementById("inputMessage");
+        let vInputCouponOrder = document.getElementById("inputCoupon");
+
         // Thuc thi ham này khi bấm gửi đơn
         gFormDataSubmit.addEventListener("submit", (e) => {
           e.preventDefault();
-
-          // khai báo các biến local, chứa giá trị của form input
-          let vInputNameOrder = document.getElementById("inputName");
-          let vInputEmailOrder = document.getElementById("inputEmail");
-          let vInputPhoneOrder = document.getElementById("inputPhone");
-          let vInputAddressOrder = document.getElementById("inputAddress");
-          let vInputMsgOrder = document.getElementById("inputMessage");
-          let vInputCouponOrder = document.getElementById("inputCoupon");
-
           // khai bao mot object chua du lieu form
           let vFormDataOject = {
             fullName: vInputNameOrder.value.trim(),
@@ -640,26 +646,45 @@
           let isValidData = isValidFormData(
             vFormDataOject,
             gMenuDataObject,
-            vArrayPizzaType
+            vArrayPizzaType,
+            gDiscountVouchers,
+            vInputCouponOrder
           );
-          console.log(isValidData);
+
+          // khai báo hàm kiểm soát việc giảm giá
+          function discountHandlePrice() {
+            // khai báo biến
+            let vIsDiscount = 0;
+            if (isValidData && vInputCouponOrder.value == "") {
+              vIsDiscount = 0;
+            } else if (isValidData) {
+              vIsDiscount = 20;
+            }
+            return vIsDiscount;
+          }
+          // lưu giá trị trả về của hàm trên vào một biến, truyền vào hàm showData
+          let vDiscountChecked = discountHandlePrice();
+
+          // check valid, nếu valid thì showdata
           if (isValidData) {
             // sau khi xử lý thì showdata ra ở đây
             showDataOrder(
               vLastItemOfArrayPizzaType,
               vFormDataOject,
-              gMenuDataObject
+              gMenuDataObject,
+              vDiscountChecked
             );
           }
         });
 
         // khai báo hàm xử lý validate form
-        function isValidFormData(paramForm, paramMenu, paramPizzaType) {
-          //check nếu paramMenu đối tượng menu pizza truyền vào rỗng thì return false
-          /* if (paramMenu.dimesion === null) {
-            console.log("here");
-          } */
-
+        function isValidFormData(
+          paramForm,
+          paramMenu,
+          paramPizzaType,
+          paramCoupons,
+          paramInputCoupon
+        ) {
           // Check nếu khách hàng chưa chọn cỡ pizza
           if (paramMenu.dimesion == null) {
             alert("Chưa chọn cỡ pizza");
@@ -700,20 +725,49 @@
           // Check nếu khách hàng chưa nhập message
           if (paramForm.message == "") {
             console.log("Chưa nhập lời nhắc");
-            return true;
           }
 
-          /* // Check nếu khách hàng chưa nhập coupon
-          if (paramValid.coupon == "") {
-            console.log("Không có mã giảm giá");
+          // khai báo một biến chuyển trạng thái khi khách hàng nhập đúng mã giảm giá
+          let isValidCoupon = false;
+
+          // duyệt mảng các mã giảm giá hợp lệ
+          paramCoupons.map((paramCoupon) => {
+            // Check nếu khách hàng chưa nhập coupon
+            console.log(paramCoupon);
+
+            switch (paramForm.coupon) {
+              case "":
+                console.log("Không có mã giảm giá");
+                isValidCoupon = true;
+                break;
+              case paramCoupon:
+                console.log("mã hợp lệ");
+                isValidCoupon = true;
+                break;
+            }
+          });
+
+          // khi nhập đúng mã giảm giá thì trả về true cho hàm isValidFormData();
+          // khi nhập không đúng thì reset ô nhập coupon và trả về false
+          if (isValidCoupon === true) {
             return true;
-          } */
+          } else {
+            alert("Mã giảm giá không hợp lệ");
+            paramInputCoupon.value = "";
+            return false;
+          }
         }
 
         // Khai bao ham show data
-        function showDataOrder(paramPizza, paramForm, paramMenu) {
+        function showDataOrder(
+          paramPizza,
+          paramForm,
+          paramMenu,
+          paramDiscount
+        ) {
           // Check paramShow tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
           // nếu khách hàng chưa chọn món thì catch error và alert để khách biết
+
           try {
             if (paramPizza !== null) {
               let vDivInfoOrder = document.getElementById("div-info-order");
@@ -738,8 +792,10 @@
                 <p>Loại pizza: ${paramPizza.name}</p>
                 <p>Mã voucher:</p>
                 <p>Giá VND: ${paramPizza.price}</p>
-                <p>Discount: 20% </p>
-                <strong>Số tiền phải trả: ${paramPizza.price * 0.8} VND</strong>
+                <p>Discount: ${paramDiscount}% </p>
+                <strong>Số tiền phải trả: ${
+                  paramPizza.price * ((100 - paramDiscount) / 100)
+                } VND</strong>
               </div>
               <button id="btn-confirm" class="my-3 w-100 btn btn-warning">
                 Xác nhận đơn hàng
@@ -753,6 +809,15 @@
                 let vBtnConfirm = document.querySelector("#btn-confirm");
                 vBtnConfirm.addEventListener("click", () => {
                   alert("BẠN ĐÃ ĐẶT HÀNG THÀNH CÔNG");
+                  vDivInfoOrder.classList.replace("d-block", "d-none");
+
+                  //reset lại các trường nhập liệu cho các lần đặt hàng tiếp theo
+                  vInputNameOrder.value = "";
+                  vInputEmailOrder.value = "";
+                  vInputPhoneOrder.value = "";
+                  vInputAddressOrder.value = "";
+                  vInputMsgOrder.value = "";
+                  vInputCouponOrder.value = "";
                 });
               }
 
