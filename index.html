@@ -476,6 +476,8 @@
       // Khai báo biến toàn cục để lưu các loại pizza
       let gSelectedPizzaType = [];
 
+      console.log(gSelectedPizzaType);
+
       // khai báo biến voucher
       let gDiscountVouchers = ["A1", "B2", "C3", "D4", "E5"];
 
@@ -597,8 +599,10 @@
         vDataPizza.price = vPricePizzaElement.innerHTML.trim();
         // push object pizza vào mảng global;
         gSelectedPizzaType.push(vDataPizza);
+
+        console.log(gSelectedPizzaType);
+        return gSelectedPizzaType;
       }
-      console.log(gSelectedPizzaType);
 
       // khai báo hàm xử lý gửi đơn hàng
       function onSubmitOrderPizza(paramOrder, paramMenu) {
@@ -627,15 +631,16 @@
           console.log(vFormDataOject);
 
           // lấy lựa chọn loại pizza cuối cùng, vì khách hàng có thể đổi ý nhiều lần
-          let vLastItemOfArrayPizzaType = paramOrder.at(-1);
+          let vArrayPizzaType = paramOrder;
+          let vLastItemOfArrayPizzaType = vArrayPizzaType.at(-1);
           // Kiểm tra mảng đã có dữ liệu hay chưa
-          console.log(paramOrder);
+          // console.log(paramOrder);
 
           // xử lý validate giá trị của form ở đây
           let isValidData = isValidFormData(
             vFormDataOject,
             gMenuDataObject,
-            paramOrder
+            vArrayPizzaType
           );
           console.log(isValidData);
           if (isValidData) {
@@ -649,80 +654,68 @@
         });
 
         // khai báo hàm xử lý validate form
-        function isValidFormData(paramValid, paramMenu, paramOrder) {
-          console.log(paramValid);
+        function isValidFormData(paramForm, paramMenu, paramPizzaType) {
+          //check nếu paramMenu đối tượng menu pizza truyền vào rỗng thì return false
+          /* if (paramMenu.dimesion === null) {
+            console.log("here");
+          } */
 
-          console.log(paramOrder);
-          // Nếu khách hàng chưa chọn loại pizza sẽ alert ở đây
-          if (paramOrder[0].name == "") {
-            alert("Chưa chọn loại pizza");
-            return false;
-          } else {
-            return true;
-          }
-
-          // Check nếu khách hàng chưa chọn co pizza
-          if (paramMenu.sizer == "") {
+          // Check nếu khách hàng chưa chọn cỡ pizza
+          if (paramMenu.dimesion == null) {
             alert("Chưa chọn cỡ pizza");
             return false;
-          } else {
-            return true;
+          }
+
+          // Check nếu khách hàng chưa chọn loại pizza
+          if (paramPizzaType.length == 0) {
+            alert("Chưa chọn loại pizza");
+            return false;
           }
 
           // Check nếu khách hàng chưa nhập tên
-          if (paramValid.fullName == "") {
+          if (paramForm.fullName == "") {
             alert("Chưa nhập tên");
             return false;
-          } else {
-            return true;
           }
 
           // Check nếu khách hàng chưa nhập email
-          if (paramValid.email == "") {
+          if (paramForm.email == "") {
             alert("Chưa nhập Email");
             return false;
-          } else {
-            return true;
           }
 
+          console.log(paramForm.phone);
           // Check nếu khách hàng chưa nhập phone
-          if (paramValid.phone == "") {
+          if (isNaN(paramForm.phone)) {
             alert("Chưa nhập số điện thoại");
             return false;
-          } else {
-            return true;
+          }
+
+          // Check nếu khách hàng chưa nhập địa chỉ
+          if (paramForm.address == "") {
+            alert("Chưa nhập địa chỉ");
+            return false;
           }
 
           // Check nếu khách hàng chưa nhập message
-          if (paramValid.message == "") {
+          if (paramForm.message == "") {
             console.log("Chưa nhập lời nhắc");
             return true;
           }
 
-          // Check nếu khách hàng chưa nhập địa chỉ
-          if (paramValid.address == "") {
-            alert("Chưa nhập địa chỉ");
-            return false;
-          } else {
-            return true;
-          }
-
-          // Check nếu khách hàng chưa nhập coupon
+          /* // Check nếu khách hàng chưa nhập coupon
           if (paramValid.coupon == "") {
             console.log("Không có mã giảm giá");
             return true;
-          }
+          } */
         }
 
         // Khai bao ham show data
         function showDataOrder(paramPizza, paramForm, paramMenu) {
-          //chạy hàm này sau khi đã render ra form xác nhận
-
           // Check paramShow tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
           // nếu khách hàng chưa chọn món thì catch error và alert để khách biết
-          console.log(paramMenu.size);
           try {
-            if (paramPizza !== null && paramMenu.size !== "") {
+            if (paramPizza !== null) {
               let vDivInfoOrder = document.getElementById("div-info-order");
               let vTemplateShow = `
               <div class="div-user-info">
