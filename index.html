@@ -18,10 +18,12 @@
   />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Custom styling -->
+  <link rel="stylesheet" href="style.css" />
 
   <body>
     <!-- Menu -->
-    <div class="container-fluid bg-light">
+    <div class="container-fluid bg-info">
       <div class="row">
         <div class="col-sm-12">
           <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
@@ -42,10 +44,10 @@
                   <a class="nav-link" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#plans">Plans</a>
+                  <a class="nav-link" href="#plans">Menu</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#about">About</a>
+                  <a class="nav-link" href="#about">Pizza</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#contact">Contact</a>
@@ -58,13 +60,13 @@
     </div>
 
     <!-- Content -->
-    <div class="container" style="padding: 120px 0 50px 0">
+    <div class="container p-5" style="padding: 120px 0 50px 0">
       <div class="row">
         <div class="col-sm-12">
           <div class="row">
             <!-- Title row home -->
-            <div class="col-sm-12">
-              <h1><b>PIZZA 365 TRULY ITALIAN</b></h1>
+            <div class="col-sm-12 my-4">
+              <h1 class="text-center"><b>PIZZA 365 TRULY ITALIAN</b></h1>
             </div>
 
             <!-- Slide row home -->
@@ -97,7 +99,7 @@
                     data-slide-to="4"
                   ></li>
                 </ol>
-                <div class="carousel-inner">
+                <div class="carousel-inner rounded">
                   <div class="carousel-item active">
                     <img
                       class="d-block w-100"
@@ -162,7 +164,7 @@
             </div>
 
             <!-- Title what we offer -->
-            <div class="col-sm-12 text-center p-4 mt-4">
+            <div class="col-sm-12 text-center p-4 mt-4 mb-3">
               <h2>
                 <b class="p-2 border-bottom">TẠI SAO LẠI CHỌN CHÚNG TÔI?</b>
               </h2>
@@ -369,72 +371,94 @@
             </div>
 
             <!-- Content Contact Us -->
-            <div class="col-sm-12">
-              <div class="row">
+            <div class="row w-100 align-items-center">
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <form action="" id="form-data-submit">
+                      <div class="form-group">
+                        <label for="inputName">Họ và Tên</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="inputName"
+                          placeholder="Nhập tên"
+                          pattern="[a-zA-Z]+"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="inputEmail">Email</label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          id="inputEmail"
+                          placeholder="Nhập email"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="inputPhone">Điện thoại</label>
+                        <!-- Sử dụng Regex để khống chế trường nhập -->
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="inputPhone"
+                          placeholder="Nhập số điện thoại, có 10 số"
+                          pattern="/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="inputAddress">Địa chỉ</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="inputAddress"
+                          placeholder="Nhập dịa chỉ"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="inputMessage">Lời nhắc</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="inputMessage"
+                          placeholder="Nhập lời nhắc"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="inputCoupon">Mã giảm giá</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="inputCoupon"
+                          placeholder="Nhập mã giảm giá, các mã hợp lệ là A1, B2, C3, D4, E5"
+                          pattern="[A-Z]{1,9}\d$"
+                        />
+                      </div>
+                      <button type="submit" class="btn btn-dark w-100">
+                        Gửi đơn
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
                 <div class="col-sm-12">
-                  <form action="" id="form-data-submit">
-                    <div class="form-group">
-                      <label for="inputName">Họ và Tên</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="inputName"
-                        placeholder="Nhập tên"
-                        pattern="[a-zA-Z]+"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="inputEmail">Email</label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="inputEmail"
-                        placeholder="Nhập email"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="inputPhone">Điện thoại</label>
-                      <!-- Sử dụng Regex để khống chế trường nhập -->
-                      <input
-                        type="number"
-                        class="form-control"
-                        id="inputPhone"
-                        placeholder="Nhập số điện thoại, có 10 số"
-                        pattern="/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="inputAddress">Địa chỉ</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="inputAddress"
-                        placeholder="Nhập dịa chỉ"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="inputMessage">Lời nhắc</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="inputMessage"
-                        placeholder="Nhập lời nhắc"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label for="inputCoupon">Mã giảm giá</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="inputCoupon"
-                        placeholder="Nhập mã giảm giá, các mã hợp lệ là A1, B2, C3, D4, E5"
-                        pattern="[A-Z]{1,9}\d$"
-                      />
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100">
-                      Gửi đơn
-                    </button>
-                  </form>
+                  <img
+                    class="img-fluid my-5"
+                    src="./images/freeship.png"
+                    alt=""
+                  />
+                  <h3
+                    class="
+                      text-uppercase text-warning
+                      bg-dark
+                      rounded
+                      text-center
+                      p-3
+                    "
+                  >
+                    freeship cho đơn hàng trên 1 triệu đồng
+                  </h3>
                 </div>
               </div>
             </div>
