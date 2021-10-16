@@ -1,12 +1,6 @@
 "use strict";
 /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
 
-// Test biểu thức chính quy
-/*       var str = "ALPHA";
-if (/^[A-Z]*$/.test(str)) alert("Passed");
-else alert("Failed");
-*/
-
 // Khai báo biến toàn cục truy xuất phần tử form
 let gFormDataSubmit = document.getElementById("form-data-submit");
 
@@ -47,43 +41,19 @@ function onClickChangeColorMenu() {
   );
   // Duyệt mảng các phần tử nút được chọn sau đó thêm sự kiện click vào mỗi phần tử
   // gán classname cho mỗi phần tử sau khi được click sẽ đổi sang màu vàng
-  // khi đổi sang màu vàng thì cùng lúc đó tiến hành ghi dữ liệu vào đối tượng gMenuDataObject
+  // khi đổi sang màu vàng thì cùng lúc đó tiến hành ghi dữ liệu vào đối tượng gMenuDataObject thông qua hàm getDataMenuPizza(paramDataMenu)
   // khi ấn sang nút khác thì đổi màu xanh trở lại
   vBtnArrayElements.forEach((vBtnElement) => {
     vBtnElement.addEventListener("click", (bIn) => {
       // chuyển màu cho nút
       bIn.target.className = "btn btn-warning btn-choose";
-      vBtnArrayElements.forEach.call(
+      // sau khi đổi màu nút, ta sẽ có vài nút có class là btn-warning, để duyệt mảng các nút đó ta sử dụng []
+      [].forEach.call(
         document.querySelectorAll(".btn-warning.btn-choose"),
         (cIn) => {
           if (cIn == bIn.target) {
             console.log(cIn);
-            //truy suat vao node cha cua phan tu nut
-            let vDivCardBodyMenu =
-              cIn.parentNode.previousSibling.previousSibling;
-            //Card header div, dung de truy xuat vao innerHtml cua childnode h3
-            let vH3SizeMenu =
-              vDivCardBodyMenu.previousSibling.previousSibling.querySelector(
-                "h3"
-              );
-            // truy xuất phần tử ul từ button được click
-            let vUlInfoMenu = vDivCardBodyMenu.querySelector("ul");
-            // truy xuất mảng các phần tử li từ button được click
-            let vLiArrayInfoMenu = vUlInfoMenu.querySelectorAll("li");
-
-            //gán dữ liệu, thông tin của kích cỡ pizza vào object gMenuDataObject
-            gMenuDataObject.dimesion =
-              vLiArrayInfoMenu[0].childNodes[1].data.trim();
-            gMenuDataObject.suongNuong =
-              vLiArrayInfoMenu[1].childNodes[1].data.trim();
-            gMenuDataObject.saLad =
-              vLiArrayInfoMenu[2].childNodes[1].data.trim();
-            gMenuDataObject.nuocNgot =
-              vLiArrayInfoMenu[3].childNodes[1].data.trim();
-            gMenuDataObject.gia =
-              vLiArrayInfoMenu[4].querySelector("b").innerHTML;
-            gMenuDataObject.size = vH3SizeMenu.innerHTML;
-            console.log(gMenuDataObject);
+            getDataMenuPizza(cIn);
           }
           if (cIn !== bIn.target) {
             // khi ấn nút khác thì đổi màu phần tử button về như cũ
@@ -95,18 +65,45 @@ function onClickChangeColorMenu() {
   });
 }
 
+// khai báo hàm truy xuất dữ liệu phần menu pizza
+function getDataMenuPizza(paramDataMenu) {
+  //truy suat vao node cha cua phan tu nut
+  let vDivCardBodyMenu =
+    paramDataMenu.parentNode.previousSibling.previousSibling;
+  //Card header div, dung de truy xuat vao innerHtml cua childnode h3
+  let vH3SizeMenu =
+    vDivCardBodyMenu.previousSibling.previousSibling.querySelector("h3");
+  // truy xuất phần tử ul từ button được click
+  let vUlInfoMenu = vDivCardBodyMenu.querySelector("ul");
+  // truy xuất mảng các phần tử li từ button được click, data của childNodes li sẽ chứa dữ liệu ta cần
+  let vLiArrayInfoMenu = vUlInfoMenu.querySelectorAll("li");
+
+  //gán dữ liệu, thông tin của kích cỡ pizza vào object gMenuDataObject
+  gMenuDataObject.dimesion = vLiArrayInfoMenu[0].childNodes[1].data.trim();
+  gMenuDataObject.suongNuong = vLiArrayInfoMenu[1].childNodes[1].data.trim();
+  gMenuDataObject.saLad = vLiArrayInfoMenu[2].childNodes[1].data.trim();
+  gMenuDataObject.nuocNgot = vLiArrayInfoMenu[3].childNodes[1].data.trim();
+  gMenuDataObject.gia = vLiArrayInfoMenu[4].querySelector("b").innerHTML;
+  gMenuDataObject.size = vH3SizeMenu.innerHTML;
+  console.log(gMenuDataObject);
+}
+
 // Khai báo hàm thực thi chuyển màu khi ấn nút chọn phần "CHỌN LOẠI PIZZA"
 function onClickChangeColorPizza() {
   // lựa chọn tất cả phần tử có class là btn btn-info btn-type-pizza
   let vBtnArrayElements = document.querySelectorAll(
     ".btn.btn-info.btn-type-pizza.w-100"
   );
-
+  // Duyệt mảng các phần tử nút được chọn sau đó thêm sự kiện click vào mỗi phần tử
+  // gán classname cho mỗi phần tử sau khi được click sẽ đổi sang màu vàng
+  // khi đổi sang màu vàng thì cùng lúc đó tiến hành thực thi hàm onClickGetDataPizza(), để ghi dữ liệu
+  // khi ấn sang nút khác thì đổi màu xanh trở lại
   vBtnArrayElements.forEach((vBtnElement) => {
     vBtnElement.addEventListener("click", (bIn) => {
       // chuyển màu cho nút
       bIn.target.className = "btn btn-warning btn-type-pizza w-100";
-      vBtnArrayElements.forEach.call(
+      // sau khi đổi màu nút, ta sẽ có vài nút có class là btn-warning, để duyệt mảng các nút đó ta sử dụng []
+      [].forEach.call(
         document.querySelectorAll(".btn.btn-warning.btn-type-pizza.w-100"),
         (cIn) => {
           if (cIn == bIn.target) {
@@ -121,7 +118,6 @@ function onClickChangeColorPizza() {
     });
   });
 }
-
 // khai bao function in ra console khi chọn loại pizza
 // trả về một mảng chứa object dữ liệu loại pizza
 function onClickGetDataPizza(paramPizza) {
@@ -130,28 +126,27 @@ function onClickGetDataPizza(paramPizza) {
     name: "",
     price: "",
   };
+  //truy xuất vào node cha của phần tử nút chọn được nhấn
   let vDivParrentNodePizzaElement = paramPizza.parentNode.parentNode;
+  //truy xuất vào node h3 chứa tên pizza
   let vNamePizzaElement =
     vDivParrentNodePizzaElement.querySelector(".h3-pizza-name");
+  //truy xuất vào node btn chứa giá pizza
   let vPricePizzaElement =
     vDivParrentNodePizzaElement.querySelector(".btn-pizza-price");
-
-  // kiểm tra xem đã lựa chọn được phần tử hay chưa,
-  //console.log(vNamePizzaElement);
-  //console.log(vPricePizzaElement);
-
-  // bind data của pizza vào đối tượng pizza
-  vDataPizza.name = vNamePizzaElement.innerHTML;
+  // bind tên và giá của pizza vào đối tượng vDataPizza
+  vDataPizza.name = vNamePizzaElement.innerHTML.trim();
   vDataPizza.price = vPricePizzaElement.innerHTML.trim();
-  // push object pizza vào mảng global;
+  // push object vDataPizza vào mảng global gSelectedPizzaType;
   gSelectedPizzaType.push(vDataPizza);
-
-  console.log(gSelectedPizzaType);
+  // kiểm tra biến global có dữ liệu chưa
+  // console.log(gSelectedPizzaType);
+  // trả về đối tượng gSelectedPizzaType sau khi đã lưu dữ liệu vào nó
   return gSelectedPizzaType;
 }
 
 // khai báo hàm xử lý gửi đơn hàng
-function onSubmitOrderPizza(paramOrder, paramMenu) {
+function onSubmitOrderPizza(paramOrder) {
   // khai báo các biến local, chứa giá trị của form input
   let vInputNameOrder = document.getElementById("inputName");
   let vInputEmailOrder = document.getElementById("inputEmail");
@@ -191,6 +186,7 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
     );
 
     // khai báo hàm kiểm soát việc giảm giá
+    // khi form nhập vào đúng, thì mới trả về một biến discount có giảm giá
     function discountHandlePrice() {
       // khai báo biến
       let vIsDiscount = 0;
@@ -204,7 +200,7 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
     // lưu giá trị trả về của hàm trên vào một biến, truyền vào hàm showData
     let vDiscountChecked = discountHandlePrice();
 
-    // check valid, nếu valid thì showdata
+    // check valid form, nếu valid thì showdata
     if (isValidData) {
       // sau khi xử lý thì showdata ra ở đây
       showDataOrder(
@@ -217,6 +213,7 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
   });
 
   // khai báo hàm xử lý validate form
+  // validate tất cả các trường nhập vào ngoại trừ trường message và mã giảm giá, có thể k nhập cũng được
   function isValidFormData(
     paramForm,
     paramMenu,
@@ -297,10 +294,10 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
     }
   }
 
-  // Khai bao ham show data
+  // Khai bao ham show data, có template để render ra dữ liệu trên frontend khi đã valid data
   function showDataOrder(paramPizza, paramForm, paramMenu, paramDiscount) {
-    // Check paramShow tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
-    // nếu khách hàng chưa chọn món thì catch error và alert để khách biết
+    // Check paramPizza tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
+    // nếu khách hàng chưa chọn món thì catch error và alert
     try {
       if (paramPizza !== null) {
         let vDivInfoOrder = document.getElementById("div-info-order");
@@ -336,14 +333,16 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
       `;
         vDivInfoOrder.classList.replace("d-none", "d-block");
         vDivInfoOrder.innerHTML = vTemplateShow;
-
         // Khai báo hàm xác nhận đơn hàng
         function onClickConfirmOrder() {
+          //truy xuất phần tử nút xác nhận
           let vBtnConfirm = document.querySelector("#btn-confirm");
+          // thêm sự kiện click vào nút xác nhận
           vBtnConfirm.addEventListener("click", () => {
+            // khi bấm nút xác nhận xong sẽ alert bạn đã đặt thành công
             alert("BẠN ĐÃ ĐẶT HÀNG THÀNH CÔNG");
+            // xóa thông tin đơn hàng sau khi đặt thành công, chuẩn bị cho lần đặt sau
             vDivInfoOrder.classList.replace("d-block", "d-none");
-
             //reset lại các trường nhập liệu cho các lần đặt hàng tiếp theo
             vInputNameOrder.value = "";
             vInputEmailOrder.value = "";
@@ -358,7 +357,7 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
             vBtnArrayMenuElements.forEach((vBtnElement) => {
               vBtnElement.className = "btn btn-success btn-choose";
             });
-            // reset lại màu các nút chọn menu
+            // reset lại màu các nút chọn loại pizza
             let vBtnArrayTypeElements = document.querySelectorAll(
               ".btn.btn-warning.btn-type-pizza.w-100"
             );
@@ -367,7 +366,7 @@ function onSubmitOrderPizza(paramOrder, paramMenu) {
             });
           });
         }
-
+        // chạy hàm xác nhận đơn hàng sau khi ấn nút xác nhận
         onClickConfirmOrder();
       }
     } catch (error) {
