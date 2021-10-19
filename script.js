@@ -8,7 +8,11 @@ let gFormDataSubmit = document.getElementById("form-data-submit");
 let gSelectedPizzaType = [];
 
 // khai báo biến voucher khi khách hàng nhập đúng thì giảm giá 20%;
-let gDiscountVouchers = ["A1", "B2", "C3", "D4", "E5"];
+let gDiscountVouchers = [];
+
+//khai báo hằng status request API
+
+const gSTATUS_REQUEST = 200;
 
 // Khai báo một object lấy dữ liệu menu pizza
 let gMenuDataObject = {
@@ -166,6 +170,7 @@ function onSubmitOrderPizza(paramOrder) {
       message: vInputMsgOrder.value.trim(),
       address: vInputAddressOrder.value.trim(),
       coupon: vInputCouponOrder.value.trim(),
+      phanTramCoupon: "",
     };
     // kiểm tra object form xem đã lưu được dữ liệu chưa
     console.log(vFormDataOject);
@@ -175,40 +180,22 @@ function onSubmitOrderPizza(paramOrder) {
     let vLastItemOfArrayPizzaType = vArrayPizzaType.at(-1);
     // Kiểm tra mảng đã có dữ liệu hay chưa
     // console.log(paramOrder);
+    //
+    let vCoupon = vFormDataOject.coupon;
 
     // xử lý validate giá trị của form ở đây
     let isValidData = isValidFormData(
       vFormDataOject,
       gMenuDataObject,
       vArrayPizzaType,
-      gDiscountVouchers,
-      vInputCouponOrder
+      vCoupon
     );
 
-    // khai báo hàm kiểm soát việc giảm giá
-    // khi form nhập vào đúng, thì mới trả về một biến discount có giảm giá
-    function discountHandlePrice() {
-      // khai báo biến
-      let vIsDiscount = 0;
-      if (isValidData && vInputCouponOrder.value == "") {
-        vIsDiscount = 0;
-      } else if (isValidData) {
-        vIsDiscount = 20;
-      }
-      return vIsDiscount;
-    }
-    // lưu giá trị trả về của hàm trên vào một biến, truyền vào hàm showData
-    let vDiscountChecked = discountHandlePrice();
-
-    // check valid form, nếu valid thì showdata
+    // check valid form và mã giảm giá nhập vào nếu valid thì showdata
+    console.log(isValidData);
     if (isValidData) {
       // sau khi xử lý thì showdata ra ở đây
-      showDataOrder(
-        vLastItemOfArrayPizzaType,
-        vFormDataOject,
-        gMenuDataObject,
-        vDiscountChecked
-      );
+      showDataOrder(vLastItemOfArrayPizzaType, vFormDataOject, gMenuDataObject);
     }
   });
 
@@ -218,7 +205,6 @@ function onSubmitOrderPizza(paramOrder) {
     paramForm,
     paramMenu,
     paramPizzaType,
-    paramCoupons,
     paramInputCoupon
   ) {
     // Check nếu khách hàng chưa chọn cỡ pizza
@@ -263,39 +249,51 @@ function onSubmitOrderPizza(paramOrder) {
       console.log("Chưa nhập lời nhắc");
     }
 
-    // khai báo một biến chuyển trạng thái khi khách hàng nhập đúng mã giảm giá
-    let isValidCoupon = false;
-
-    // duyệt mảng các mã giảm giá hợp lệ
-    paramCoupons.map((paramCoupon) => {
-      // Check nếu khách hàng chưa nhập coupon
-      console.log(paramCoupon);
-
-      switch (paramForm.coupon) {
-        case "":
-          console.log("Không có mã giảm giá");
-          isValidCoupon = true;
-          break;
-        case paramCoupon:
-          console.log("mã hợp lệ");
-          isValidCoupon = true;
-          break;
+    // Check nếu khách hàng nhập đúng mã giảm giá, sai thì alert và reset trường nhập
+    if (paramInputCoupon == "") {
+      console.log("Không có mã giảm giá");
+      paramForm.phanTramCoupon = 0;
+    } else if (paramInputCoupon !== "") {
+      // tạo ra đối tượng request và gửi đi
+      let vXmlHttp = new XMLHttpRequest();
+      sendRequestToGetVoucherDiscount(paramInputCoupon, vXmlHttp);
+      // Hàm xử lý mã giảm giá sau khi trả về
+      let isValidCoupon = handleVoucherRespone(vXmlHttp);
+      if (isValidCoupon.maVoucher !== paramInputCoupon) {
+        alert("mã giảm giá không hợp lệ");
+        vInputCouponOrder.value = "";
+      } else if (isValidCoupon.maVoucher === paramInputCoupon) {
+        console.log(isValidCoupon);
+        paramForm.coupon = isValidCoupon.maVoucher;
+        paramForm.phanTramCoupon = isValidCoupon.phanTramGiamGia;
       }
-    });
-
-    // khi nhập đúng mã giảm giá thì trả về true cho hàm isValidFormData();
-    // khi nhập không đúng thì reset ô nhập coupon và trả về false
-    if (isValidCoupon === true) {
-      return true;
-    } else {
-      alert("Mã giảm giá không hợp lệ");
-      paramInputCoupon.value = "";
-      return false;
     }
+    return true;
+  }
+
+  // khai báo hàm gọi mã giảm giá
+  function sendRequestToGetVoucherDiscount(paramInputCoupon, paramXmlHttp) {
+    paramXmlHttp.open(
+      "GET",
+      "http://42.115.221.44:8080/devcamp-voucher-api/voucher_detail/" +
+        paramInputCoupon,
+      false
+    );
+    paramXmlHttp.send();
+  }
+
+  // ham thuc hien xuw ly tren frontend
+  function handleVoucherRespone(paramXmlHttp) {
+    let vCouponRespone = paramXmlHttp.responseText;
+    let vStatusCode = paramXmlHttp.status;
+    if (vStatusCode == gSTATUS_REQUEST) {
+      var bCouponResponse = JSON.parse(vCouponRespone);
+    }
+    return bCouponResponse;
   }
 
   // Khai bao ham show data, có template để render ra dữ liệu trên frontend khi đã valid data
-  function showDataOrder(paramPizza, paramForm, paramMenu, paramDiscount) {
+  function showDataOrder(paramPizza, paramForm, paramMenu) {
     // Check paramPizza tham số truyền vào có rỗng hay không (khách hàng có thể chưa chọn món)
     // nếu khách hàng chưa chọn món thì catch error và alert
     try {
@@ -322,9 +320,9 @@ function onSubmitOrderPizza(paramOrder) {
           <p>Loại pizza: ${paramPizza.name}</p>
           <p>Mã voucher: ${paramForm.coupon}</p>
           <p>Giá VND: ${paramPizza.price}</p>
-          <p>Discount: ${paramDiscount}% </p>
+          <p>Discount: ${paramForm.phanTramCoupon}% </p>
           <strong>Số tiền phải trả: ${
-            paramPizza.price * ((100 - paramDiscount) / 100)
+            paramPizza.price * ((100 - paramForm.phanTramCoupon) / 100)
           } VND</strong>
         </div>
         <button id="btn-confirm" class="my-3 w-100 btn btn-warning">
