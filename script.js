@@ -288,6 +288,8 @@ function onSubmitOrderPizza(paramOrder) {
     let vStatusCode = paramXmlHttp.status;
     if (vStatusCode == gSTATUS_REQUEST) {
       var bCouponResponse = JSON.parse(vCouponRespone);
+    } else {
+      alert("Something went wrong with API endpoint");
     }
     return bCouponResponse;
   }
