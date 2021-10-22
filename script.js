@@ -1,5 +1,7 @@
 "use strict";
 /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
+//
+let gSelectDrink = document.getElementById("select-drink");
 
 // Khai báo biến toàn cục truy xuất phần tử form
 let gFormDataSubmit = document.getElementById("form-data-submit");
@@ -13,6 +15,7 @@ let gDiscountVouchers = [];
 //khai báo hằng status request API
 
 const gSTATUS_REQUEST = 200;
+const gREQUEST_READY_STATUS_FINISH_AND_OK = 4;
 
 // Khai báo một object lấy dữ liệu menu pizza
 let gMenuDataObject = {
@@ -21,10 +24,12 @@ let gMenuDataObject = {
   suongNuong: null,
   saLad: null,
   nuocNgot: null,
+  loaiNuocNgot: "Choose...",
   gia: "",
 };
 
 /*** REGION 2 - Vùng gán / thực thi hàm xử lý sự kiện cho các elements */
+onPageLoading();
 
 // Thực thi hàm chuyển màu khi ấn nút chọn menu pizza
 onClickChangeColorMenu();
@@ -248,6 +253,11 @@ function onSubmitOrderPizza(paramOrder) {
     if (paramForm.message == "") {
       console.log("Chưa nhập lời nhắc");
     }
+    // Check nếu khách hàng chưa chọn đồ uống
+    if (paramMenu.loaiNuocNgot == "" || paramMenu.loaiNuocNgot == "Choose...") {
+      alert("Chưa chọn đồ uống");
+      return false;
+    }
 
     // Check nếu khách hàng nhập đúng mã giảm giá, sai thì alert và reset trường nhập
     if (paramInputCoupon == "") {
@@ -287,11 +297,11 @@ function onSubmitOrderPizza(paramOrder) {
     let vCouponRespone = paramXmlHttp.responseText;
     let vStatusCode = paramXmlHttp.status;
     if (vStatusCode == gSTATUS_REQUEST) {
-      var bCouponResponse = JSON.parse(vCouponRespone);
+      let bCouponResponse = JSON.parse(vCouponRespone);
+      return bCouponResponse;
     } else {
       alert("Something went wrong with API endpoint");
     }
-    return bCouponResponse;
   }
 
   // Khai bao ham show data, có template để render ra dữ liệu trên frontend khi đã valid data
@@ -315,11 +325,12 @@ function onSubmitOrderPizza(paramOrder) {
           <p>Đường kính: ${paramMenu.dimesion}</p>
           <p>Sườn nướng: ${paramMenu.suongNuong}</p>
           <p>Salad: ${paramMenu.saLad}</p>
-          <p>Nước ngọt: ${paramMenu.nuocNgot}</p>
+          <p>Kích cỡ nước ngọt: ${paramMenu.nuocNgot}</p>
         </div>
         <hr />
         <div class="div-pizza-type">
           <p>Loại pizza: ${paramPizza.name}</p>
+          <p>Nước ngọt: ${paramMenu.loaiNuocNgot}</p>
           <p>Mã voucher: ${paramForm.coupon}</p>
           <p>Giá VND: ${paramPizza.price}</p>
           <p>Discount: ${paramForm.phanTramCoupon}% </p>
@@ -376,3 +387,49 @@ function onSubmitOrderPizza(paramOrder) {
 }
 
 /*** REGION 4 - Common funtions - Vùng khai báo hàm dùng chung trong toàn bộ chương trình*/
+
+function onPageLoading() {
+  loadDataDrink();
+  addDrinkDataTogMenuDataObject();
+}
+
+//
+function loadDataDrink() {
+  "use strict";
+  const vBASE_URL = "http://42.115.221.44:8080/devcamp-pizza365/drinks";
+  let vXhttp = new XMLHttpRequest();
+  vXhttp.open("GET", vBASE_URL, true);
+  vXhttp.send();
+  vXhttp.onreadystatechange = function () {
+    if (
+      this.readyState == gREQUEST_READY_STATUS_FINISH_AND_OK &&
+      this.status == gSTATUS_REQUEST
+    ) {
+      let vResponeJsonDataFromDrinkApi = vXhttp.responseText;
+      /*       let vDrinkValue = vResponeDataFromDrinkApi.maNuocUong;
+      let vDrinkName = vResponeDataFromDrinkApi.tenNuocUong; */
+      let vSelectOptionsData = document.createElement("option");
+      let vResponeDataObj = JSON.parse(vResponeJsonDataFromDrinkApi);
+      vResponeDataObj.forEach((paramRespone) => {
+        addOptionDrink(paramRespone);
+      });
+    }
+  };
+}
+/// addOptionDrink
+function addOptionDrink(paramDrink) {
+  let vOptionsDrink = document.createElement("option");
+  vOptionsDrink.value = paramDrink.maNuocUong;
+  vOptionsDrink.text = paramDrink.tenNuocUong;
+  gSelectDrink.appendChild(vOptionsDrink);
+  //
+}
+/// addDrinkDataTo gMenuDataObject
+
+function addDrinkDataTogMenuDataObject() {
+  gSelectDrink.addEventListener("change", (e) => {
+    let vDrinkSelectValue = e.target.options[e.target.selectedIndex].text;
+    gMenuDataObject.loaiNuocNgot = vDrinkSelectValue;
+    console.log(gMenuDataObject);
+  });
+}
