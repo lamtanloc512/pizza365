@@ -361,6 +361,7 @@ function onSubmitOrderPizza(paramOrder) {
             vInputAddressOrder.value = "";
             vInputMsgOrder.value = "";
             vInputCouponOrder.value = "";
+            gSelectDrink.value = "none";
             // reset lại màu các nút chọn menu
             let vBtnArrayMenuElements = document.querySelectorAll(
               ".btn.btn-warning.btn-choose"
