@@ -406,10 +406,10 @@ function loadDataDrink() {
       this.status == gSTATUS_REQUEST
     ) {
       let vResponeJsonDataFromDrinkApi = vXhttp.responseText;
-      /*       let vDrinkValue = vResponeDataFromDrinkApi.maNuocUong;
-      let vDrinkName = vResponeDataFromDrinkApi.tenNuocUong; */
-      let vSelectOptionsData = document.createElement("option");
       let vResponeDataObj = JSON.parse(vResponeJsonDataFromDrinkApi);
+      /*       for (let index = 0; index < vResponeDataObj.length; index++) {
+        addOptionDrink(vResponeDataObj[i]);
+      } */
       vResponeDataObj.forEach((paramRespone) => {
         addOptionDrink(paramRespone);
       });
